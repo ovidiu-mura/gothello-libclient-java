@@ -6,7 +6,7 @@ import java.util.*;
  * LOA game client for Gamed server.
  *
  * @author Bart Massey
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class GameClient {
     /**
@@ -167,7 +167,7 @@ public class GameClient {
 	while(!Character.isDigit(msg_txt.charAt(i)))
 	    i++;
 	j = i;
-	while(!Character.isDigit(msg_txt.charAt(j)))
+	while(Character.isDigit(msg_txt.charAt(j)))
 	    j++;
 	black_time_control = Integer.parseInt(msg_txt.substring(i, j));
     }
