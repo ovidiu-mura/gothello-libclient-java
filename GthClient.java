@@ -6,7 +6,7 @@ import java.util.*;
  * LOA game client for Gamed server.
  *
  * @author Bart Massey
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class GameClient {
     /**
