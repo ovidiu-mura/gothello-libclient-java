@@ -1,24 +1,77 @@
+/**
+ * LOA game client for Gamed server.
+ *
+ * @author Bart Massey
+ * @version $Revision:$
+ */
+
 import java.io.*;
 import java.net.*;
 import java.util.*;
 
 public class GameClient {
+    /**
+     * Player is nobody.
+     */
     public final static int WHO_NONE = 0;
+    /**
+     * Player is white.
+     */
     public final static int WHO_WHITE = 1;
+    /**
+     * Player is black.
+     */
     public final static int WHO_BLACK = 2;
+    /**
+     * Player is undefined.
+     */
     public final static int WHO_OTHER = 3;
 
+    /**
+     * Game will continue.
+     */
     public final static int STATE_CONTINUE = 0;
+    /**
+     * Game over.
+     */
     public final static int STATE_DONE = 1;
 
+    /**
+     * Which side this client is playing.
+     */
     public int who = WHO_NONE;
+    /**
+     * If done, player which won.
+     */
     public int winner = WHO_NONE;
+    /**
+     * Move returned by get_move() method as side-effect.
+     */
     public Move move;
 
+    /**
+     * True if playing under time controls.
+     */
     public boolean time_controls = false;
+    /**
+     * Number of seconds white player has at start of game,
+     * if playing under time controls.
+     */
     public int white_time_control;
+    /**
+     * Number of seconds black player has at start of game,
+     * if playing under time controls.
+     */
     public int black_time_control;
+    /**
+     * Number of seconds the client has currently remaining,
+     * if playing under time controls.
+     */
     public int my_time;
+    /**
+     * Number of seconds the client's opponent has currently remaining,
+     * if playing under time controls.
+     */
     public int opp_time;
 
     private final static String client_version = "0.9";
@@ -164,6 +217,16 @@ public class GameClient {
 	fsock_out.flush();
     }
 
+    /**
+     * Construct a game client, connected to the specified
+     * server and ready to play.
+     * @param side Should be either WHO_WHITE or WHO_BLACK.
+     *             Side the client will play.
+     * @param host Hostname of the server.
+     * @param server Server number of server on host.
+     * @throws IOException Unable to connect to specified server
+     *                     as specified side.
+     */
     public GameClient(int side, String host, int server)
       throws IOException {
 	InetAddress addr = InetAddress.getByName(host);
@@ -203,6 +266,14 @@ public class GameClient {
 	who = side;
     }
 
+    /**
+     * Make a move on the server.  The server must be expecting
+     * a move (that is, it must be this client's turn), and
+     * the move must be legal.
+     * @param m What move to make.
+     * @returns Will be either STATE_CONTINUE or STATE_DONE.
+     * @throws IOException Move is illegal or communication failed.
+     */
     public int make_move(Move m)
       throws IOException {
 	String ellipses = "";
@@ -243,6 +314,14 @@ public class GameClient {
 	return STATE_CONTINUE;
     }
 
+    /**
+     * Get a move from the server.  The server must be expecting
+     * a move from the opponent (that is, it must be this client's
+     * opponent's turn).  The <tt>move</tt> field will indicate
+     * the returned move.
+     * @returns Will be either STATE_CONTINUE or STATE_DONE.
+     * @throws IOException Move is illegal or communication failed.
+     */
     public int get_move()
       throws IOException {
 	if (who == WHO_NONE)
@@ -252,7 +331,8 @@ public class GameClient {
 	if (who == WHO_WHITE)
 	    serial++;
 	get_msg();
-	if ((msg_code < 311 || msg_code > 326) && msg_code != 361 && msg_code != 362)
+	if ((msg_code < 311 || msg_code > 326) &&
+	    msg_code != 361 && msg_code != 362)
 	    throw new IOException("bad status code " + zeropad(msg_code));
 	if ((who == WHO_WHITE &&
 	     (msg_code == 312 || msg_code == 314 || msg_code == 323 ||
@@ -320,10 +400,12 @@ public class GameClient {
 	throw new IOException("unknown status code " + zeropad(msg_code));
     }
 
-    // attempt to get the socket etc. closed
-    // if necessary before the object is abandoned
+    /**
+     * Internal method.
+     */
     protected void finalize()
 	throws Throwable {
 	close();
     }
+
 }
