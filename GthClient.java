@@ -10,6 +10,7 @@ public class GameClient {
     public final static int STATE_CONTINUE = 0;
     public final static int STATE_DONE = 1;
 
+    public int who = WHO_NONE;
     public int winner = WHO_NONE;
     public Move move;
 
@@ -20,7 +21,6 @@ public class GameClient {
     public int opp_time;
 
     private final static String client_version = "0.9";
-    private int who = WHO_NONE;
     private Socket sock = null;
     private BufferedReader fsock_in = null;
     private PrintStream fsock_out = null;
