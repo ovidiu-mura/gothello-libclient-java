@@ -1,14 +1,13 @@
-/**
- * LOA game client for Gamed server.
- *
- * @author Bart Massey
- * @version $Revision:$
- */
-
 import java.io.*;
 import java.net.*;
 import java.util.*;
 
+/**
+ * LOA game client for Gamed server.
+ *
+ * @author Bart Massey
+ * @version $Revision: 1.4 $
+ */
 public class GameClient {
     /**
      * Player is nobody.
