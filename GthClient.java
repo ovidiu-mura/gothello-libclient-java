@@ -1,5 +1,6 @@
 import java.io.*;
 import java.net.*;
+import java.util.*;
 
 public class GameClient {
     public final static int WHO_NONE = 0;
@@ -28,11 +29,13 @@ public class GameClient {
 
     private String msg_txt;
     private int msg_code;
-    private int serial = 1;
+    private int serial = 0;
 
     private void get_msg()
       throws IOException {
 	String buf = fsock_in.readLine();
+	if (buf == null)
+	    throw new IOException("read failed");
 	int len = buf.length();
 	if (len < 4)
 	    throw new IOException("short read");
@@ -55,40 +58,44 @@ public class GameClient {
 
     private Move parse_move()
       throws IOException {
-      StringReader msg_reader = new StringReader(msg_txt);
-      StreamTokenizer toks = new StreamTokenizer(msg_reader);
+	Move m;
+	try {
+	    StringTokenizer toks = new StringTokenizer(msg_txt);
 
-      if (toks.nextToken() != toks.TT_NUMBER)
-	throw new IOException("expected serial number");
-      if (serial != (int)toks.nval)
-	throw new IOException("synchronization lost");
-      switch(msg_code) {
-      case 312:
-      case 314:
-      case 323:
-      case 324:
-      case 326:
-	if (toks.nextToken() != toks.TT_WORD || !toks.sval.equals("..."))
-	  throw new IOException("expected ellipsis");
-      }
-      if (toks.nextToken() != toks.TT_WORD)
-	throw new IOException("expected move");
-      Move m = new Move(toks.sval);
-      switch (msg_code) {
-      case 313:
-      case 314:
-	if (toks.nextToken() != toks.TT_NUMBER)
-	  throw new IOException("expected time control");
-	int whose_move = WHO_BLACK;
-	if (msg_code == 314)
-	  whose_move = WHO_WHITE;
-	if (whose_move == who)
-	  my_time = (int)toks.nval;
-	else
-	  opp_time = (int)toks.nval;
-      }
-      msg_reader.close();
-      return m;
+	    int nserial = Integer.parseInt(toks.nextToken());
+	    if (serial != nserial)
+		throw new IOException("synchronization lost: expected " +
+				  serial +
+				  " got " +
+				  nserial);
+	    switch(msg_code) {
+	    case 312:
+	    case 314:
+	    case 323:
+	    case 324:
+	    case 326:
+		String ellipses = toks.nextToken();
+		if(!ellipses.equals("..."))
+		    throw new IOException("expected ellipsis, got " + ellipses);
+	    }
+	    String ms = toks.nextToken();
+	    m = new Move(ms);
+	    switch (msg_code) {
+	    case 313:
+	    case 314:
+		int tc = Integer.parseInt(toks.nextToken());
+		int whose_move = WHO_BLACK;
+		if (msg_code == 314)
+		    whose_move = WHO_WHITE;
+		if (whose_move == who)
+		    my_time = tc;
+		else
+		    opp_time = tc;
+	    }
+	} catch(NoSuchElementException e) {
+	    throw new IOException("missing argument in opponent move");
+	}
+	return m;
     }
 
     private void get_time_controls()
@@ -204,6 +211,8 @@ public class GameClient {
 	    throw new IOException("not initialized");
 	if (winner != WHO_NONE)
 	    throw new IOException("game over");
+	if (who == WHO_BLACK)
+	    serial++;
 	if (who == WHO_WHITE)
 	    ellipses = " ...";
 	fsock_out.print(serial + ellipses + " " + m.name());
@@ -231,7 +240,6 @@ public class GameClient {
 	get_msg();
 	if (msg_code < 311 || msg_code > 314)
 	    throw new IOException("bad status code " + zeropad(msg_code));
-	serial++;
 	return STATE_CONTINUE;
     }
 
@@ -241,6 +249,8 @@ public class GameClient {
 	    throw new IOException("not initialized");
 	if (winner != WHO_NONE)
 	    throw new IOException("game over");
+	if (who == WHO_WHITE)
+	    serial++;
 	get_msg();
 	if ((msg_code < 311 || msg_code > 326) && msg_code != 361 && msg_code != 362)
 	    throw new IOException("bad status code " + zeropad(msg_code));
