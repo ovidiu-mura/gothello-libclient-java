@@ -3,12 +3,12 @@ import java.net.*;
 import java.util.*;
 
 /**
- * LOA game client for Gamed server.
+ * Gothello game client for Gthd server.
  *
  * @author Bart Massey
- * @version $Revision: 1.6 $
+ * @version $Revision: 2.0 $
  */
-public class GameClient {
+public class GthClient {
     /**
      * Player is nobody.
      */
@@ -77,7 +77,7 @@ public class GameClient {
     private Socket sock = null;
     private BufferedReader fsock_in = null;
     private PrintStream fsock_out = null;
-    private final static int server_base = 29057;
+    private final static int server_base = 29068;
 
     private String msg_txt;
     private int msg_code;
@@ -123,6 +123,8 @@ public class GameClient {
 	    switch(msg_code) {
 	    case 312:
 	    case 314:
+	    case 316:
+	    case 318:
 	    case 323:
 	    case 324:
 	    case 326:
@@ -135,9 +137,11 @@ public class GameClient {
 	    switch (msg_code) {
 	    case 313:
 	    case 314:
+	    case 317:
+	    case 318:
 		int tc = Integer.parseInt(toks.nextToken());
 		int whose_move = WHO_BLACK;
-		if (msg_code == 314)
+		if (msg_code == 314 || msg_code == 318)
 		    whose_move = WHO_WHITE;
 		if (whose_move == who)
 		    my_time = tc;
@@ -226,7 +230,7 @@ public class GameClient {
      * @throws IOException Unable to connect to specified server
      *                     as specified side.
      */
-    public GameClient(int side, String host, int server)
+    public GthClient(int side, String host, int server)
       throws IOException {
 	InetAddress addr = InetAddress.getByName(host);
 	sock = new Socket(addr, server_base + server);
@@ -308,7 +312,7 @@ public class GameClient {
 	if (msg_code == 207)
 	  my_time = get_time();
 	get_msg();
-	if (msg_code < 311 || msg_code > 314)
+	if (!(msg_code >= 311 || msg_code <= 318))
 	    throw new IOException("bad status code " + zeropad(msg_code));
 	return STATE_CONTINUE;
     }
@@ -330,14 +334,18 @@ public class GameClient {
 	if (who == WHO_WHITE)
 	    serial++;
 	get_msg();
-	if ((msg_code < 311 || msg_code > 326) &&
-	    msg_code != 361 && msg_code != 362)
+	if (!(msg_code >= 311 && msg_code <= 326 ||
+	    msg_code == 361 || msg_code == 362))
 	    throw new IOException("bad status code " + zeropad(msg_code));
 	if ((who == WHO_WHITE &&
-	     (msg_code == 312 || msg_code == 314 || msg_code == 323 ||
+	     (msg_code == 312 || msg_code == 314 ||
+	      msg_code == 316 || msg_code == 318 ||
+	      msg_code == 323 ||
 	      msg_code == 324 || msg_code == 326)) ||
 	    (who == WHO_BLACK &&
-	     (msg_code == 311 || msg_code == 313 || msg_code == 321 ||
+	     (msg_code == 311 || msg_code == 313 ||
+      	      msg_code == 315 || msg_code == 317 ||
+	      msg_code == 321 ||
 	      msg_code == 322 || msg_code == 325)))
 	    throw new IOException("status code " +
 				  zeropad(msg_code) +
@@ -347,6 +355,8 @@ public class GameClient {
 	    switch(msg_code) {
 	    case 311:
 	    case 313:
+	    case 315:
+	    case 317:
 		move = parse_move();
 		return STATE_CONTINUE;
 	    case 321:
@@ -373,6 +383,8 @@ public class GameClient {
 	    switch(msg_code) {
 	    case 312:
 	    case 314:
+	    case 316:
+	    case 318:
 		move = parse_move();
 		return STATE_CONTINUE;
 	    case 323:
