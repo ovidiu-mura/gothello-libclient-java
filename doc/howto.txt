@@ -1,0 +1,26 @@
+How To: Using the javalib interface to the Gothello daemon
+Bart Massey 2001/11/26
+
+The Java client "library" for the Gothello daemon is a
+standard Java 1.3 class.  You will need the files
+GthClient.class and Move.class, which you may either use
+as-is or compile for yourself.
+
+In brief, it is used by creating a new GthClient object,
+which automatically connects to the specified server on the
+specified host as the specified player.  (See the
+documentation on running a Gothello game for details.)  The
+client object then handles the details of making moves and
+getting moves from the server, using the make_move() and
+get_move() methods.  These accept and return Move objects.
+Time control tracking is performed by the client object,
+which caches a bunch of state information about the game
+in progress in public fields.
+
+There is javadoc documentation in the javadoc subdirectory
+of this directory, which should make the details of using
+GthClient and Move much clearer.  Also, the Grossthello Java
+Gothello player is available as a good example of what a
+Java client might look like.
+
+Let me know if there are questions or bugs.
