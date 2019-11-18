@@ -18,9 +18,9 @@ Time control tracking is performed by the client object,
 which caches a bunch of state information about the game
 in progress in public fields.
 
-There is javadoc [documentation](javadoc/index.html) in the
-javadoc subdirectory of this directory, which should make
-the details of using `GthClient` and `Move` much clearer.
+There is javadoc [documentation](https://pdx-cs-ai.github.io/gothello-libclient-java/javadoc/index.html) in the
+`javadoc` subdirectory of this directory, which should make
+the details of using `GthClient` and `Move` clearer.
 Also, the
 [Grossthello](http://github.com/pdx-cs-ai/gothello-grossthello)
 Java Gothello player is available as an example of what a
