@@ -6,7 +6,7 @@ import java.util.*;
  * Gothello game client for Gthd server.
  *
  * @author Bart Massey
- * @version $Revision: 2.0 $
+ * @version $Revision: 2.1 $
  */
 public class GthClient {
     /**
