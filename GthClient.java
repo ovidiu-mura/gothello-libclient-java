@@ -73,7 +73,7 @@ public class GthClient {
      */
     public int opp_time;
 
-    private final static String client_version = "0.9";
+    private final static String client_version = "0.9.1";
     private Socket sock = null;
     private BufferedReader fsock_in = null;
     private PrintStream fsock_out = null;
